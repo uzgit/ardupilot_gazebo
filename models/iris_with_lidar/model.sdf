@@ -3,7 +3,7 @@
   <model name='iris_with_lidar'>
     <pose>0 0 0 0 0 0</pose>
       <include>
-        <uri>model://iris_with_standoffs_demo</uri>
+        <uri>model://iris_ardupilot</uri>
         <!--
           IMPORTANT (for now):
           zephyr_delta_wing model is -y forward, x-left and z-up
@@ -20,7 +20,7 @@
       </include>
       <joint name="lidar_mount" type="fixed">
         <child>hokuyo::link</child>
-        <parent>iris_demo::iris::base_link</parent>
+        <parent>iris_ardupilot::iris::base_link</parent>
         <axis>
           <xyz>0 0 1</xyz>
           <limit>

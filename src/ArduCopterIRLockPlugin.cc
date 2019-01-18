@@ -233,8 +233,13 @@ void ArduCopterIRLockPlugin::OnNewFrame(const unsigned char * /*_image*/,
     if (!camera->IsVisible(vis))
       continue;
 
-    ignition::math::Vector2i pt = GetScreenSpaceCoords(
-        vis->GetWorldPose().pos.Ign(), camera);
+    #if GAZEBO_MAJOR_VERSION >= 8
+        ignition::math::Vector2i pt = GetScreenSpaceCoords(
+          vis->WorldPose().Pos(), camera);
+    #else
+        ignition::math::Vector2i pt = GetScreenSpaceCoords(
+          vis->GetWorldPose().pos.Ign(), camera);
+    #endif
 
     // use selection buffer to check if visual is occluded by other entities
     // in the camera view
@@ -259,7 +264,11 @@ void ArduCopterIRLockPlugin::OnNewFrame(const unsigned char * /*_image*/,
 
     if (result && result->GetRootVisual() == vis)
     {
+      #if GAZEBO_MAJOR_VERSION >= 8
+      this->Publish(vis->Name(), pt.X(), pt.Y());
+      #else
       this->Publish(vis->GetName(), pt.X(), pt.Y());
+      #endif
     }
   }
 }
@@ -292,9 +301,6 @@ void ArduCopterIRLockPlugin::Publish(const std::string &/*_fiducial*/,
   // 1x1 pixel box for now
   pkt.size_x = static_cast<float>(1);
   pkt.size_y = static_cast<float>(1);
-
-  std::cerr << "fiducial '" << _fiducial << "':" << _x << ", " << _y
-      << ", pos: " << pkt.pos_x << ", " << pkt.pos_y << std::endl;
 
   struct sockaddr_in sockaddr;
   memset(&sockaddr, 0, sizeof(sockaddr));

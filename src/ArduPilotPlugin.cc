@@ -38,9 +38,14 @@
 #include <mutex>
 #include <string>
 #include <vector>
+#if GAZEBO_MAJOR_VERSION < 8
 #include <sdf/sdf.hh>
+#endif
+
+// #include<gazebo/gazebo.hh>
 #include <ignition/math/Filter.hh>
 #include <gazebo/common/Assert.hh>
+#include <gazebo/common/common.hh>
 #include <gazebo/common/Plugin.hh>
 #include <gazebo/msgs/msgs.hh>
 #include <gazebo/sensors/sensors.hh>
@@ -61,12 +66,15 @@ GZ_REGISTER_MODEL_PLUGIN(ArduPilotPlugin)
 /// \param[in] _verbose If true, gzerror if the parameter is not available.
 /// \return True if the parameter was found in _sdf, false otherwise.
 template<class T>
+
 bool getSdfParam(sdf::ElementPtr _sdf, const std::string &_name,
   T &_param, const T &_defaultValue, const bool &_verbose = false)
 {
   if (_sdf->HasElement(_name))
   {
     _param = _sdf->GetElement(_name)->Get<T>();
+      // _param = _sdf->GetElement(_name)->Get<std::string>();
+      // namespace_ = sdf->GetElement("robotNamespace")->Get<std::string>();
     return true;
   }
 
@@ -909,9 +917,13 @@ void ArduPilotPlugin::Load(physics::ModelPtr _model, sdf::ElementPtr _sdf)
 void ArduPilotPlugin::OnUpdate()
 {
   std::lock_guard<std::mutex> lock(this->dataPtr->mutex);
-
+  #if GAZEBO_MAJOR_VERSION >= 8
+  const gazebo::common::Time curTime =
+    this->dataPtr->model->GetWorld()->SimTime();
+  #else
   const gazebo::common::Time curTime =
     this->dataPtr->model->GetWorld()->GetSimTime();
+  #endif
 
   // Update the control surfaces and publish the new state.
   if (curTime > this->dataPtr->lastControllerUpdateTime)
@@ -950,6 +962,7 @@ bool ArduPilotPlugin::InitArduPilotSockets(sdf::ElementPtr _sdf) const
       this->dataPtr->fdm_port_in, 9002);
   getSdfParam<uint16_t>(_sdf, "fdm_port_out",
       this->dataPtr->fdm_port_out, 9003);
+
 
   if (!this->dataPtr->socket_in.Bind(this->dataPtr->listen_addr.c_str(),
       this->dataPtr->fdm_port_in))
@@ -996,7 +1009,11 @@ void ArduPilotPlugin::ApplyMotorForces(const double _dt)
         const double scaler = 5*(upper_Lim - lower_Lim);
         */
         const double posTarget = this->dataPtr->controls[i].cmd;
+        #if GAZEBO_MAJOR_VERSION >= 9
+        const double pos = this->dataPtr->controls[i].joint->Position(0);
+        #else
         const double pos = this->dataPtr->controls[i].joint->GetAngle(0).Radian();
+        #endif
         const double error = pos - posTarget;
         const double force = this->dataPtr->controls[i].pid.Update(error, _dt);
         this->dataPtr->controls[i].joint->SetForce(0, force);
@@ -1192,7 +1209,11 @@ void ArduPilotPlugin::SendState() const
   // send_fdm
   fdmPacket pkt;
 
+  #if GAZEBO_MAJOR_VERSION >= 8
+  pkt.timestamp = this->dataPtr->model->GetWorld()->SimTime().Double();
+  #else
   pkt.timestamp = this->dataPtr->model->GetWorld()->GetSimTime().Double();
+  #endif
 
   // asssumed that the imu orientation is:
   //   x forward
@@ -1240,10 +1261,15 @@ void ArduPilotPlugin::SendState() const
   // adding modelXYZToAirplaneXForwardZDown rotates
   //   from: model XYZ
   //   to: airplane x-forward, y-left, z-down
+  #if GAZEBO_MAJOR_VERSION >= 8
+  const ignition::math::Pose3d gazeboXYZToModelXForwardZDown =
+    this->modelXYZToAirplaneXForwardZDown +
+    this->dataPtr->model->WorldPose();
+  #else
   const ignition::math::Pose3d gazeboXYZToModelXForwardZDown =
     this->modelXYZToAirplaneXForwardZDown +
     this->dataPtr->model->GetWorldPose().Ign();
-
+  #endif
   // get transform from world NED to Model frame
   const ignition::math::Pose3d NEDToModelXForwardZUp =
     gazeboXYZToModelXForwardZDown - this->gazeboXYZToNED;
@@ -1274,8 +1300,13 @@ void ArduPilotPlugin::SendState() const
   // Get NED velocity in body frame *
   // or...
   // Get model velocity in NED frame
+  #if GAZEBO_MAJOR_VERSION >= 9
+  const ignition::math::Vector3d velGazeboWorldFrame =
+    this->dataPtr->model->GetLink()->WorldLinearVel();
+  #else
   const ignition::math::Vector3d velGazeboWorldFrame =
     this->dataPtr->model->GetLink()->GetWorldLinearVel().Ign();
+  #endif
   const ignition::math::Vector3d velNEDFrame =
     this->gazeboXYZToNED.Rot().RotateVectorReverse(velGazeboWorldFrame);
   pkt.velocityXYZ[0] = velNEDFrame.X();

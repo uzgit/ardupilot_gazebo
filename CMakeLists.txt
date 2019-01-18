@@ -3,14 +3,20 @@ cmake_minimum_required(VERSION 2.8 FATAL_ERROR)
 
 project(ardupilot_sitl_gazebo)
 
-
 #######################
 ## Find Dependencies ##
 #######################
+set(Boost_INCLUDE_DIRS /usr/include/boost)
+set(Boost_LIBRARY_DIRS /usr/include/lib)
+include_directories(${Boost_INCLUDE_DIRS})
+include_directories(${Boost_LIBRARY_DIRS})
 
 find_package(gazebo REQUIRED)
 set(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} ${GAZEBO_CXX_FLAGS}")
 
+
+
+set(Boost_DEBUG 1)
 if("${GAZEBO_VERSION}" VERSION_LESS "7.0")
     message(FATAL_ERROR "You need at least Gazebo 7.0. Your version: ${GAZEBO_VERSION}")
 else()
@@ -39,7 +45,7 @@ link_directories(
 set (plugins_single_header
         ArduPilotPlugin
         ArduCopterIRLockPlugin
-				ArduCopterPlugin
+				# ArduCopterPlugin
         # GimbalSmall2dPlugin
 	# WindPlugin
         )
@@ -50,8 +56,8 @@ target_link_libraries(ArduCopterIRLockPlugin ${GAZEBO_LIBRARIES})
 add_library(ArduPilotPlugin SHARED src/ArduPilotPlugin.cc)
 target_link_libraries(ArduPilotPlugin ${GAZEBO_LIBRARIES})
 
-add_library(ArduCopterPlugin SHARED src/ArduCopterPlugin.cc)
-target_link_libraries(ArduCopterPlugin ${GAZEBO_LIBRARIES})
+# add_library(ArduCopterPlugin SHARED src/ArduCopterPlugin.cc)
+# target_link_libraries(ArduCopterPlugin ${GAZEBO_LIBRARIES})
 
 if("${GAZEBO_VERSION}" VERSION_LESS "8.0")
     add_library(GimbalSmall2dPlugin SHARED src/GimbalSmall2dPlugin.cc)
@@ -61,4 +67,4 @@ endif()
 
 install(TARGETS ArduCopterIRLockPlugin DESTINATION ${GAZEBO_PLUGIN_PATH})
 install(TARGETS ArduPilotPlugin DESTINATION ${GAZEBO_PLUGIN_PATH})
-install(TARGETS ArduCopterPlugin DESTINATION ${GAZEBO_PLUGIN_PATH})
+#install(TARGETS ArduCopterPlugin DESTINATION ${GAZEBO_PLUGIN_PATH})

@@ -148,7 +148,19 @@ You will also need to edit ArduPilot Parameter SYSID_THISMAV to be unique from o
 
 ### Example
 See simulating 3 IRIS quadcopter at once tutorial from Jonathan Lopes Florêncio
+
 https://www.youtube.com/watch?v=3c7EhVMaqKY&feature=youtu.be
+
+````
+On 1st Terminal(Launch ArduCopter SITL)
+sim_vehicle.py -v ArduCopter -f gazebo-iris -I0
+
+On 2nd Terminal(Launch APMrover2 SITL)
+sim_vehicle.py -v APMrover2 -f gazebo-rover -I1
+
+On 3rd Terminal(Launch Gazebo with demo Copter & Rover Model)
+gazebo --verbose worlds/iris_rover.world
+````
 
 ## Troubleshooting
 
