@@ -3,6 +3,26 @@
   <model name='iris'>
     <pose>0 0 0.194923 0 0 0</pose>
     <link name='base_link'>
+
+<sensor name="iris_imu_sensor" type="imu">
+        <pose>0 0 0 0 0 0</pose>
+        <always_on>true</always_on>
+        <update_rate>100</update_rate>
+        <visualize>true</visualize>
+        <topicName>/iris/imu</topicName>
+        <plugin filename="libgazebo_ros_imu_sensor.so" name="iris_imu_plugin">
+                <robotNamespace>/</robotNamespace>
+                <topicName>imu</topicName>
+                <!--bodyName>imu_link</bodyName-->
+                <updateRateHZ>100.0</updateRateHZ>
+                <gaussianNoise>0.0</gaussianNoise>
+                <xyzOffset>0 0 0</xyzOffset>
+                <rpyOffset>0 0 0</rpyOffset>
+                <frameName>/iris/imu_link</frameName>
+                <link_name>iris::base_link</link_name>
+        </plugin>
+</sensor>
+
       <velocity_decay>
         <linear>0.0</linear>
         <angular>0.0</angular>
