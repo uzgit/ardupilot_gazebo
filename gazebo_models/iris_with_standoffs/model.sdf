@@ -1,9 +1,15 @@
 <?xml version='1.0'?>
 <sdf version='1.6'>
   <model name='iris'>
+    <enable_wind>true</enable_wind>
     <pose>0 0 0.194923 0 0 0</pose>
     <link name='base_link'>
-
+	    <enable_wind>true</enable_wind>
+    <wind>
+            <linear_velocity>
+                20 20 0
+            </linear_velocity>
+    </wind>
 <sensor name="iris_imu_sensor" type="imu">
         <pose>0 0 0 0 0 0</pose>
         <always_on>true</always_on>
@@ -55,8 +61,9 @@
           </contact>
           <friction>
             <ode>
-              <mu>1.0</mu>
-              <mu2>1.0</mu2>
+              <!--mu>1.0</mu-->
+              <mu>1000</mu>
+              <mu2>1000</mu2>
             </ode>
           </friction>
         </surface>

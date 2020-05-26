@@ -228,8 +228,8 @@
         </dynamics>
         <use_parent_model_frame>1</use_parent_model_frame>
         <limit>
-	  <!--lower>-3.14159265</lower--> <!-- used to be -0.1-->
-	  <lower>-0.1</lower> <!-- used to be -0.1-->
+	  <lower>-3.14159265</lower> <!-- used to be -0.1-->
+	  <!--lower>-0.1</lower> <!-- used to be -0.1-->
           <upper>3.14159265</upper>
           <!--effort>10</effort-->
           <effort>100</effort>

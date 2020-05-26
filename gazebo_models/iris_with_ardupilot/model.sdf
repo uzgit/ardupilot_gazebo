@@ -25,8 +25,12 @@
 	</dynamics>
         <use_parent_model_frame>true</use_parent_model_frame>
         <limit>
-          <lower>-3.14159265</lower>
-	  <upper>3.14159265</upper>
+<!--	
+	<lower>-3.14159265</lower>
+	<upper>3.14159265</upper>
+-->
+          <lower>-1.5708</lower>
+	  <upper>1.5708</upper>
 	  <!--effort>10</effort-->
 	  <effort>100</effort>
 	  <velocity>10</velocity>
