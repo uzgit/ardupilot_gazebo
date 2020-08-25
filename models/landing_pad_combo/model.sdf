@@ -1,0 +1,113 @@
+<?xml version="1.0" ?>
+<sdf version="1.6">
+	<model name="landing_pad">
+		<!--plugin name="landing_pad_velocity_controller" filename="liblanding_pad_velocity_controller_plugin.so"/-->
+		<!--pose>20 0 0.01 0 0 0</pose-->
+		<static>false</static>
+		<link name="link">
+			<gravity>true</gravity>
+			<!--collision name="collision">
+				<geometry>
+					<box>
+						<size>1.5063 1.1 0.01</size>
+					</box>
+				</geometry>
+				<surface>
+					<contact>
+						<collide_without_contact>false</collide_without_contact>
+						<ode>
+							<min_depth>0</min_depth>
+						</ode>
+					</contact>
+				</surface>
+			</collision-->
+			<collision name="collision_1">
+				<pose>0 0 0.01 0 0 -1</pose>
+				<geometry>
+					<box>
+						<size>1.5063 1.1 0.01</size>
+					</box>
+				</geometry>
+				<surface>
+					<contact>
+						<collide_without_contact>false</collide_without_contact>
+						<ode>
+							<min_depth>0</min_depth>
+						</ode>
+					</contact>
+					<friction>
+						<ode>
+							<mu>100000</mu>
+							<mu2>100000</mu2>
+						</ode>
+					</friction>
+				</surface>
+			</collision>
+			<collision name="collision_2">
+				<pose>0 0 -0.01 0 0 1</pose>
+				<geometry>
+					<box>
+						<size>1.5063 1.1 0.01</size>
+					</box>
+				</geometry>
+				<surface>
+					<contact>
+						<collide_without_contact>false</collide_without_contact>
+						<ode>
+							<min_depth>0</min_depth>
+						</ode>
+					</contact>
+					<!-- We don't want friction on the bottom, so it will slide smoothly on the ground. -->
+					<friction>
+						<ode>
+							<mu>0</mu>
+							<mu2>0</mu2>
+						</ode>
+					</friction>
+				</surface>
+			</collision>
+			<visual name="visual">
+				<geometry>
+					<box>
+						<!--size>1.4063 1.1 0.01</size-->
+						<size>1.5063 1.1 0.01</size>
+					</box>
+				</geometry>
+			</visual>
+
+			<visual name="landing_pad_apriltag">
+				<pose>0.5468 0 0.01 0 0 1.5708</pose>
+				<cast_shadows>true</cast_shadows>
+				<geometry>
+					<plane>
+						<normal>0 0 1</normal>
+						<size>0.3125 0.3125</size>
+					</plane>
+				</geometry>
+				<material>
+					<script>
+						<uri>file://media/materials/scripts/gazebo.material</uri>
+					<name>Gazebo/LandingPadAprilTag</name>
+					</script>
+				</material>
+			</visual>
+
+			<visual name="landing_pad_whycon">
+				<pose>-0.2032 0 0.01 0 0 3.1415926</pose>
+				<cast_shadows>true</cast_shadows>
+				<geometry>
+					<plane>
+						<normal>0 0 1</normal>
+						<size>1 1</size>
+					</plane>
+				</geometry>
+				<material>
+					<script>
+						<uri>file://media/materials/scripts/gazebo.material</uri>
+						<name>Gazebo/LandingPadWhyCon</name>
+					</script>
+				</material>
+			</visual>
+		</link>
+	</model>
+</sdf>

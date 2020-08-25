@@ -1,47 +1,31 @@
-# Ardupilot Gazebo Plugin & Models
+# Ardupilot Gazebo plugin 
 
 ## Requirements :
-Native Ubuntu Xenial(16.04 LTS) able to run full 3D graphics.
-
-Note : Virtual Machine such as VMWare Player does not support full 3D graphics.
-
-but, possible solution is here
-
-Type follow in the terminal,
-````
-echo "export SVGA_VGPU10=0" >> ~/.bashrc
-source ~/.bashrc
-````
-solution retreived from here http://answers.gazebosim.org/question/13214/virtual-machine-not-launching-gazebo/
-
-Gazebo version 7.x or 8.x  
-The dev branch will works on gazebo >= 9.x  
+Native Ubuntu able to run full 3D graphics.
+Gazebo version 8.x or greater
+The dev branch will works on gazebo >= 8.x  
+For Gazebo 7 use branch gazebo7
 
 ## Disclamer : 
 This is a playground until I get some time to push the correct patch to gazebo master (I got hard time to work with mercurial..)!  
 So you can expect things to not be up-to-date.  
-This assume that your are using Ubuntu 16.04
+This assume that your are using Ubuntu 16.04 or Ubuntu 18.04
 
 ## Usage :
 I assume you already have Gazebo installed with ROS (or without).  
-If you don't have it yet, install ROS with sudo apt install ros-kinetic-desktop-full 
-(follow instruction here http://wiki.ros.org/kinetic/Installation/Ubuntu).  
+If you don't have it yet, install ROS with `sudo apt install ros-melodic-desktop-full`
+(follow instruction here http://wiki.ros.org/melodic/Installation/Ubuntu).  
+Due to a bug in current gazebo release from ROS, please update gazebo with OSRF version from http://gazebosim.org/tutorials?tut=install_ubuntu
 
-Or install directly gazebo8 from http://gazebosim.org/tutorials?tut=install_ubuntu  
+libgazeboX-dev must be installed, X be your gazebo version (9 on ROS melodic).
 
-libgazebo7-dev or libgazebo8-dev must be installed.
+For Gazebo X
+````
+sudo apt-get install libgazeboX-dev
+````
 
-For Gazebo 7
 ````
-sudo apt-get install libgazebo7-dev
-````
-OR  
-For Gazebo 8
-````
-sudo apt-get install libgazebo8-dev
-````
-````
-git clone https://github.com/SwiftGust/ardupilot_gazebo
+git clone https://github.com/khancyr/ardupilot_gazebo
 cd ardupilot_gazebo
 mkdir build
 cd build
@@ -49,18 +33,26 @@ cmake ..
 make -j4
 sudo make install
 ````
-Set Path of Gazebo Models
+
 ````
-echo 'export GAZEBO_MODEL_PATH=~/ardupilot_gazebo/gazebo_models' >> ~/.bashrc
+echo 'source /usr/share/gazebo/setup.sh' >> ~/.bashrc
 ````
 
-Set Path of Gazebo Worlds
+Set Path of Gazebo Models (Adapt the path to where to clone the repo)
 ````
-export GAZEBO_RESOURCE_PATH=~/ardupilot_gazebo/gazebo_worlds:${GAZEBO_RESOURCE_PATH}
+echo 'export GAZEBO_MODEL_PATH=~/ardupilot_gazebo/models' >> ~/.bashrc
+````
+
+Set Path of Gazebo Worlds (Adapt the path to where to clone the repo)
+````
+echo 'export GAZEBO_RESOURCE_PATH=~/ardupilot_gazebo/worlds:${GAZEBO_RESOURCE_PATH}' >> ~/.bashrc
+````
+
+````
 source ~/.bashrc
 ````
 
-Install is done !!
+DONE !
 
 Now launch a world file with a copter/rover/plane and ardupilot plugin, and it should work! 
 (I will try to add some world file and model later)
@@ -69,57 +61,47 @@ Now launch a world file with a copter/rover/plane and ardupilot plugin, and it s
 
 How to Launch :  
 Launch Ardupilot Software In the Loop Simulation for each vehicle.
-On new terminal, Launch Gazebo with basic demo world.
-ROVER
+On new terminal, launch Gazebo with basic demo world.
 
+#####ROVER (no model provided for now)
+
+On 1st Terminal (Launch Ardupilot SITL)
 ````
-On 1st Terminal(Launch Ardupilot SITL)
-sim_vehicle.py -v APMrover2 -f gazebo-rover  -m --mav10 --map --console -I0
-
-On 2nd Termianal(Launch Gazebo with demo Rover model)
-gazebo --verbose (Please Add if there is one.)
-
-````
-COPTER (3DR IRIS)
-````
-On 1st Terminal(Launch Ardupilot SITL)
-sim_vehicle.py -v ArduCopter -f gazebo-iris  -m --mav10 --map --console -I0
-
-On 2nd Terminal(Launch Gazebo with demo 3DR Iris model)
-gazebo --verbose iris_ardupilot.world
+sim_vehicle.py -v APMrover2 -f gazebo-rover --map --console
 ````
 
-PLANE
+On 2nd Terminal (Launch Gazebo with demo Rover model)
 ````
-On 1st Terminal(Launch Ardupilot SITL)
-sim_vehicle.py -v ArduPlane -f gazebo-zephyr  -m --mav10 --map --console -I0
-
-On 2nd Terminal(Launch Gazebo with demo Zephyr flying wing model)
-gazebo --verbose zephyr_ardupilot_demo.world
+gazebo --verbose worlds/ (Please Add if there is one.)
 ````
 
-In addition, you can use any GCS of Ardupilot locally or remotely(will require connection setup).
-If MAVProxy Developer GCS is uncomfortable. Omit --map --console arguments out of SITL launch. 
+##### COPTER
 
-And use APMPlanner 2 or QGroundControl instead.
-
-Local connection with APMPlanner2/QGroundControl is automatic, and easier to use.
-
-For APMPlanner2
-
-Download it here http://firmware.eu.ardupilot.org/Tools/APMPlanner/
-and launch it in terminal
-
+On 1st Terminal (Launch Ardupilot SITL)
 ````
-apmplanner2
+sim_vehicle.py -v ArduCopter -f gazebo-iris --map --console
 ````
 
-For QGroundControl
+On 2nd Terminal (Launch Gazebo with demo 3DR Iris model)
+````
+gazebo --verbose worlds/iris_arducopter_runway.world
+````
 
-Download it here and follow the installation guide.
+##### PLANE
 
-https://donlakeflyer.gitbooks.io/qgroundcontrol-user-guide/en/download_and_install.html
+On 1st Terminal (Launch Ardupilot SITL)
+````
+sim_vehicle.py -v ArduPlane -f gazebo-zephyr --map --console
+````
 
+On 2nd Terminal (Launch Gazebo with demo Zephyr flying wing model)
+````
+gazebo --verbose worlds/zephyr_ardupilot_demo.world
+````
+
+In addition, you can use any GCS of Ardupilot locally or remotely (will require connection setup).
+If MAVProxy Developer GCS is uncomportable. Omit --map --console arguments out of SITL launch and use APMPlanner 2 or QGroundControl instead.
+Local connection with APMPlanner2/QGroundControl is automatic, and recommended.
 
 ## Troubleshooting
 
@@ -127,7 +109,7 @@ https://donlakeflyer.gitbooks.io/qgroundcontrol-user-guide/en/download_and_insta
 
 In case you see this message when you launch gazebo with demo worlds, check you have no error after sudo make install.  
 If no error use "ls" on the install path given to see if the plugin is really here.  
-If this is correct, check with "cat /usr/share/gazebo/setup.sh" the variable GAZEBO_PLUGIN_PATH. It should be the same as the install path. If not use "cp" to copy the lib to right path. 
+If this is correct, check with `cat /usr/share/gazebo/setup.sh` the variable `GAZEBO_PLUGIN_PATH`. It should be the same as the install path. If not use `cp` to copy the lib to right path. 
 
 For Example
 
@@ -135,7 +117,7 @@ For Example
 sudo cp -a /usr/lib/x86_64-linux-gnu/gazebo-7.0/plugins/ /usr/lib/x86_64-linux-gnu/gazebo-7/
 ````
 
-path mismatch is confirmed as ROS's glitch. It'll be fixed.
+path mismatch is confirmed as ROS's glitch. It will be fixed.
 
 ### Future(not activated yet)
 To use Gazebo gps, you must offset the heading of +90° as gazebo gps is NWU and ardupilot is NED 
@@ -150,4 +132,4 @@ example : for SITL default location
       <heading_deg>87</heading_deg>
     </spherical_coordinates>
 ````
-
+Rangefinder
