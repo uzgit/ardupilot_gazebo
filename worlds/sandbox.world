@@ -248,8 +248,22 @@
 	<!--<uri>model://iris_with_ardupilot</uri> -->
 	<uri>model://iris_with_ardupilot</uri>
       </include>
-      <plugin name="gimbal_controller" filename="libgimbal_controller_plugin.so"/>
-
+      <plugin name="gimbal_controller" filename="libgimbal_controller_plugin.so">
+		<tilt_joint>iris_demo::gimbal_small_2d::tilt_joint</tilt_joint>
+		<pan_joint>iris_demo::iris_gimbal_mount</pan_joint>
+		<target_tilt_topic>/pid/camera/control_effort/y</target_tilt_topic>
+		<target_pan_topic>/pid/camera/control_effort/x</target_pan_topic>
+		<tilt_pid>
+			<p>0.5</p>
+			<i>0.1</i>
+			<d>0.05</d>
+		</tilt_pid>
+		<pan_pid>
+			<p>0.5</p>
+			<i>0.1</i>
+			<d>0.05</d>
+		</pan_pid>
+      </plugin>
 
     </model>
 
